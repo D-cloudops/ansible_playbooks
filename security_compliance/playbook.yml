@@ -1,0 +1,6 @@
+---
+- name: check_compliance
+  tasks: localhost
+  become: yes
+  tasks:
+    - name: ensuring file permission

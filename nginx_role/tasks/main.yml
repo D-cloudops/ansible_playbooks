@@ -1,0 +1,19 @@
+---
+- name: install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: start & enable nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Deploy nginx config
+  template:
+    src: nginx_config.j2
+    dest: /etc/nginx/ngix.config
+  notify: Restart nginx
+
+

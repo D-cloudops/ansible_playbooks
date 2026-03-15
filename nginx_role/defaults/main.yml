@@ -1,0 +1,52 @@
+nginx_port:80
+
+
+
+---
+- name: create ec2 vm
+  hosts: localhost
+  connection: local
+  tasks:
+   - name: creating ec2 machine
+     amazon.aws.ec2_instance:
+      name: "ansible-node-{{ item.node }}"
+  #   key_name: "prod-ssh-key"
+    #  vpc_subnet_id: default
+      region: ap-south-1
+      instance_type: "{{ type }}"
+      security_group: default
+      aws_access_key: "{{ access_key }}"
+      aws_secret_key: "{{ secret_access_key }}"
+      network:
+         assign_public_ip: true
+      image_id: "{{ item.amid }}"
+      tags:
+        Environment: Testing
+      register: result
+     loop:
+      - {amid: "ami-0f58b397bc5c1f2e8", node: "1"}
+      - {amid: "ami-0f58b397bc5c1f2e8", node: "2"}
+      - {amid: "ami-0e1d06225679bc1c5", node: "3"}
+
+   -  name: debugging
+      debug:
+        var: result
+
+
+---
+- name: user administration
+  hosts: localhost
+  become: true
+  vars:
+    user_name:
+      - dan
+  tasks:
+    - name: creating user 
+      user:
+        name: {{ user_name }}
+        comment : ansible created
+        generate_ssh_key: true
+        state: present
+        groups: docker
+
+

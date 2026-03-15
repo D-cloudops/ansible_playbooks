@@ -1,0 +1,12 @@
+---
+# tasks file for security_policies
+-  name: Disable root login in SSH
+   lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '${item.regexp}'
+    line: '${item.lines}'
+    state: present
+   loop:
+    - { regexp: '^#?PermitRootLogin*$', lines: "PermitRootLogin {{ ssh_permit_root_login }}"}
+    - { regexp: '^#?AllowUsers', lines: "AllowUsers {{ ssh_allow_users }}"}
+   notify: Restart sshd

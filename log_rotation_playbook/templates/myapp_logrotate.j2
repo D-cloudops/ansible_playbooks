@@ -1,0 +1,11 @@
+/var/log/{{log_file_location}}/*.log {
+        daily           # Rotate logs daily
+ # Keep 7 rotated log files
+        rotate 7       
+        compress        # Compress rotated log files
+        missingok       # Don't throw an error if the log file is missing
+        notifempty      # Don't rotate if the log file is empty
+        postrotate      # Commands to run after rotation
+            /usr/bin/systemctl restart my_app.service > /dev/null
+        endscript
+    }

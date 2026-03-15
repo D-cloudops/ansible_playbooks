@@ -1,0 +1,7 @@
+---
+# vars file for security_policies
+ssh_permit_root_login: no
+ssh_allow_users: 
+  - ec2-user
+  - dan
+

@@ -1,0 +1,45 @@
+---
+- name: User Mgm
+  hosts: all
+
+  tasks:
+  - name: User Creation
+    user:
+      name: "{{ item }}"
+      comment: new user adding for QA Team
+      shell: /bin/bash
+    loop:
+      - Raju
+      - Sham
+      - Baburao
+
+
+
+-------------------
+# user_management with variable
+---
+- name: user administration
+  hosts: localhost
+  become: true
+  vars:
+    user_name:
+       - dan
+       - kill
+  tasks:
+    - name: creating user
+      user:
+        name: "{{ item }}"
+        comment : ansible created
+        state: present
+        groups: docker
+      loop: "{{ user_name }}"
+
+    - name: set up ssh keys
+      authorized_key:
+        user: {{ item }}
+        state: present
+        key: "{{ lookup('file', /root/.ssh/id_rsa.pub) }}"
+      loop: "{{ user_name }}"
+
+
+

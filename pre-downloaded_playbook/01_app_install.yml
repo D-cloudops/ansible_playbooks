@@ -1,0 +1,75 @@
+---
+- name: Install and Start the service
+  hosts: all
+  vars:
+    - app: [httpd, firwalld]
+
+  tasks:
+  - name: Installing nginx
+    yum:
+      name: "{{ app }}"
+      state: present
+    notify: starting the service
+    tags: nginx-installed
+  
+  handlers:
+  - name: Starting the service
+    service:
+      name: "{{ app }}"
+      state: started
+      enabled: true
+    tags: nginx-started
+
+
+
+---
+- name: variable_declaration
+  hosts: localhost 
+  vars:
+    - app: [httpd, firwalld]
+  tasks:
+    - name: install
+      apt:
+        name: "{{ app }}"
+        state: present
+      notify: start the services
+
+  handlers:
+    - name: start the services
+      service:
+        name: "{{ app }}"
+        state: started
+        enabled: true
+
+
+
+
+---
+- name: variable_declaration
+  hosts: localhost
+  become: yes
+  vars:
+    - app:
+        - apache2
+        - docker.io
+  tasks:
+   - name: install
+     apt:
+      name: "{{ app }}"
+      state: present
+     notify: start the services
+
+  handlers:
+   - name: start the services
+     service:
+      name: "{{ item }}"
+      state: started
+      enabled: true
+     loop: "{{app}}"
+
+
+
+
+
+
+  

@@ -1,0 +1,16 @@
+---
+- name: installing & managing packages
+  hosts: all
+  become: yes
+  tasks:
+    - name: installing
+      yum:
+        name: "{{ packages }}"
+        state: present
+
+    - name: starting
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop: "{{ packages }}"

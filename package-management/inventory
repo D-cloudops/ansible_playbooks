@@ -1,0 +1,6 @@
+#declare the managed nodes
+[prod]
+host1  ansible_host=server.com
+
+[stage]
+node1  ansible_host=serverstage.com

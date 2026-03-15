@@ -1,0 +1,33 @@
+---
+- name: log rotation for myapp
+  hosts: all
+  become: yes
+  tasks:
+    - name: configuring log rotate
+      template:
+        src: template/myapp_logrotate.j2
+        dest: /etc/logrotate.d/myapp_logrotate
+        mode: 0644
+
+    - name: force logrotate check
+      cmd: logrotate -f /etc/logrotate.d/myapp
+
+    - name: findings files greater than 7 days
+      find:
+        paths: /var/log/{{log_file_location}}/
+        age: 7d
+        file_type: file
+      register: file_name    
+
+    - name: debug
+      debug:
+        msg: "{{ item.path }}"
+      loop: "{{file_name.files}}"
+
+    - name: removing older files
+      file:
+       name: "{{item.path}}"
+       state: absent
+      loop: "{{file_name.files}}"
+
+    

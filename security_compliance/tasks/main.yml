@@ -1,0 +1,52 @@
+---
+- name:  ensure report directory
+  file:
+    path: "{{ report_dir }}"
+    state: directory  
+    owner: root
+    group: root
+    mode: 0755
+
+- name: optionally ensure app group
+  group:
+    name: "{{ app_dir.group }}"
+    state: present
+  when: ensure_app_user | bool
+
+- name: ensure app user exists
+  user:
+    name: "{{ app_die.owner }}"
+    group: "{{ app_dir.group }}"
+    create_home: false
+    shell: /usr/sbin/nologin
+    state: present
+  when ensure_app_user | bool
+
+- name: enforce permission on critical files
+  file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+    state: file
+  loop: "{{ critical_files }}"
+  register: file_fix
+
+- name: ensure app directory exists
+  file:
+    path: "{{ app_dir.path }}"
+    state: directory
+    mode: "{{ app_dir.mode }}"
+  register: app_dir_created
+
+- name: enforce ownershio/permission
+  file:
+    path: "{{ app_dir.path }}"
+    owner: "{{ app_dir.owner }}"
+    group: "{{ app_dir.group }}"
+    mode: "{{ app_dir.mode }}"
+    state: directory
+    recurse: "{{ app_die.recurse | bool }}"
+  register: app_dir_fix
+
+
